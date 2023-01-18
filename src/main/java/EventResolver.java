@@ -7,9 +7,19 @@ public class EventResolver {
 
         String resolvedEventName = combineLocalAndRemoteEventName(localEvent, remoteEvent);
 
-        Map<Integer, Note> localEventNotes = getIdsInLocalEventNotes(localEvent);
+        // Make a map from the Local Event Note ID to the Note itself
+        Map<Integer, Note> localEventNotes = new HashMap<>();
 
-        Map<Integer, Note> remoteEventNotes = getIdsInRemoteEventNotes(remoteEvent);
+        for (Note note : localEvent.notes()) {
+            getIdsInEventNotes(localEventNotes, note);
+        }
+
+        // Make a map from the Remote Event ID of the note to the note itself
+        Map<Integer, Note> remoteEventNotes = new HashMap<>();
+
+        for (Note note : remoteEvent.notes()) {
+            getIdsInEventNotes(remoteEventNotes, note);
+        }
 
         // Create new List for Resolved Event Notes
         List<Note> resolvedEventNotes = new LinkedList<>();
@@ -50,33 +60,12 @@ public class EventResolver {
         // Combine Name from Local Event and Remote Event to create Name for Resolved Event
         if (!localEvent.name().equals(remoteEvent.name())) {
             resolvedEventName += " / " + remoteEvent.name();
-        } else {
-            // If Local and Remote Event names conflict, Resolved Event Name set to single value
-            resolvedEventName = remoteEvent.name();
         }
         return resolvedEventName;
     }
 
-    private static Map<Integer, Note> getIdsInLocalEventNotes(Event localEvent) {
-
-        // Make a map from the Local Event Note ID to the Note itself
-        Map<Integer, Note> localEventNotes = new HashMap<>();
-
-        for (Note note : localEvent.notes()) {
-            localEventNotes.put(note.getId(), note);
-        }
-        return localEventNotes;
-    }
-
-    private static Map<Integer, Note> getIdsInRemoteEventNotes(Event remoteEvent) {
-
-        // Make a map from the Remote Event ID of the note to the note itself
-        Map<Integer, Note> remoteEventNotes = new HashMap<>();
-
-        for (Note note : remoteEvent.notes()) {
-            remoteEventNotes.put(note.getId(), note);
-        }
-        return remoteEventNotes;
+    private static void getIdsInEventNotes(Map<Integer, Note> localEventNotes, Note note) {
+        localEventNotes.put(note.getId(), note);
     }
 
     private static void ifConflictingIdInEventNotes(Note localEventNote, Note resolvedEventNote,
