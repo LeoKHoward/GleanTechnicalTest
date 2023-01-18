@@ -79,5 +79,4 @@ public class EventResolver {
             resolvedEventNote.setText(localEventNote.getText() + " / " + conflictingRemoteEventNote.getText());
         }
     }
-
 }
